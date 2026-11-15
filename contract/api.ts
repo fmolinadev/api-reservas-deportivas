@@ -40,6 +40,12 @@ export interface Bloqueo {
   motivo: string;
 }
 
+/** Motivo conservado de una reserva propia cancelada por un bloqueo. */
+export interface CancelacionPorBloqueo {
+  reservaId: string;
+  motivo: string;
+}
+
 /** Respuesta de POST /auth/registro y POST /auth/ingreso. */
 export interface Sesion {
   token: string;

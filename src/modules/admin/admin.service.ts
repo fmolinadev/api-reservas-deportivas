@@ -110,7 +110,11 @@ export class AdministracionServicio {
           .getRepository(ReservaEntidad)
           .update(
             { id: r.id, estado: 'confirmada' },
-            { estado: 'cancelada', ocupacion: null },
+            {
+              estado: 'cancelada',
+              ocupacion: null,
+              motivoCancelacionPorBloqueo: motivo,
+            },
           );
         if (cambio.affected === 1) canceladas.push(r);
       }
@@ -122,7 +126,7 @@ export class AdministracionServicio {
       this.avisos.avisar([r.usuarioId], {
         titulo: 'Reserva cancelada',
         cuerpo: `Cancelamos tu reserva del ${dia}/${mes} a las ${r.inicio}. Motivo: ${motivo}.`,
-        datos: { reservaId: r.id },
+        datos: { tipo: 'suspension-reserva', reservaId: r.id },
       });
     return creados.map(bloqueoAContrato);
   }

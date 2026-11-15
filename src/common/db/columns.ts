@@ -1,8 +1,16 @@
 // Tipos de columna portables a los cuatro motores (AGENTS §5.3). Las entidades usan
 // sólo estos helpers.
 import { Column, type ColumnOptions, PrimaryColumn } from 'typeorm';
+import { PRESETS_DB, PROVEEDORES_DB } from './providers.js';
 
-const motor = (): string => process.env.DB_MOTOR ?? 'better-sqlite3';
+const motor = (): string => {
+  const proveedor = PROVEEDORES_DB.find(
+    (nombre) => nombre === process.env.DB_PROVEEDOR?.trim(),
+  );
+  return proveedor
+    ? PRESETS_DB[proveedor].motor
+    : process.env.DB_MOTOR?.trim() || 'better-sqlite3';
+};
 
 /** Id de texto con prefijo ("usr-207"). */
 export const ColumnaId = (): PropertyDecorator =>
@@ -53,8 +61,8 @@ export const ColumnaJson = (opciones: ColumnOptions = {}): PropertyDecorator =>
 
 /**
  * Instante, guardado en UTC: `timestamptz` en PostgreSQL, `datetime` en el resto
- * (ninguno de los dos existe en todos). El motor se lee del entorno porque los
- * decoradores se evalúan al importar, antes de que Nest arme la configuración.
+ * (ninguno de los dos existe en todos). El proveedor tiene prioridad sobre DB_MOTOR,
+ * igual que en la configuración: los decoradores se evalúan al importar.
  */
 export const ColumnaInstante = (
   opciones: ColumnOptions = {},

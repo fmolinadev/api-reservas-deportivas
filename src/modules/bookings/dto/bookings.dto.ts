@@ -37,6 +37,13 @@ export class MisReservasDto extends PaginacionDto {
   cuando: (typeof MOMENTOS)[number] = 'proximas';
 }
 
+export class FiltrosCancelacionesPorBloqueoDto extends PaginacionDto {
+  @ApiPropertyOptional({ example: 'res-1180' })
+  @IsOptional()
+  @IsString({ message: 'La reserva tiene que ser un id de reserva.' })
+  reservaId?: string;
+}
+
 /** La cancelación no lleva cuerpo: el DTO vacío hace que el pipe rechace campos de más. */
 export class CancelarReservaDto {}
 

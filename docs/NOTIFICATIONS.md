@@ -12,6 +12,20 @@ administración llaman a `Avisos` después de confirmar sus cambios en la base.
   favorito, excepto a quien canceló.
 - Los recordatorios dos horas antes siguen siendo notificaciones locales del teléfono.
 
+## Detección local de suspensiones
+
+`GET /yo/reservas/cancelaciones-por-bloqueo` requiere sesión y devuelve una lista paginada
+`{ reservaId, motivo }` de las reservas propias canceladas por bloqueos. El motivo se guarda
+junto con la cancelación en la misma transacción y permanece aunque se elimine el bloqueo.
+El parámetro opcional `reservaId` filtra la lista por una reserva.
+El contrato de `GET /yo/reservas` no cambia. Las cancelaciones anteriores a esta función no
+tienen motivo retroactivo y no se pueden identificar con certeza.
+
+La columna nueva requiere actualizar el esquema de la base al desplegar la API; verificar la
+configuración de sincronización y hacer una copia de seguridad antes de aplicarlo. La app
+compara las reservas con su estado anterior y consulta este endpoint sólo ante transiciones
+de activa a cancelada.
+
 Los envíos son asíncronos: un problema de Expo se registra en el log y no deshace la reserva ni
 el bloqueo. Si Expo indica `DeviceNotRegistered`, el token se elimina para no volver a enviar
 al dispositivo inválido.

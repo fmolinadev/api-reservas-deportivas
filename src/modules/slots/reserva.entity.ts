@@ -41,6 +41,9 @@ export class ReservaEntidad {
   @ColumnaEnum()
   estado: EstadoReserva;
 
+  @ColumnaTexto(200, { nullable: true })
+  motivoCancelacionPorBloqueo: string | null;
+
   @ColumnaInstante({ nullable: true })
   ingresoEn: Date | null;
 

@@ -9,14 +9,22 @@
           "type": "number"
         },
         "tipo": {
-          "enum": ["imagen", "audio", "video"],
+          "enum": [
+            "imagen",
+            "audio",
+            "video"
+          ],
           "type": "string"
         },
         "url": {
           "type": "string"
         }
       },
-      "required": ["url", "tipo", "bytes"],
+      "required": [
+        "url",
+        "tipo",
+        "bytes"
+      ],
       "type": "object"
     },
     "Bloqueo": {
@@ -30,19 +38,49 @@
           "type": "string"
         },
         "fin": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "id": {
           "type": "string"
         },
         "inicio": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "motivo": {
           "type": "string"
         }
       },
-      "required": ["id", "espacioId", "fecha", "inicio", "fin", "motivo"],
+      "required": [
+        "id",
+        "espacioId",
+        "fecha",
+        "inicio",
+        "fin",
+        "motivo"
+      ],
+      "type": "object"
+    },
+    "CancelacionPorBloqueo": {
+      "additionalProperties": false,
+      "description": "Motivo conservado de una reserva propia cancelada por un bloqueo.",
+      "properties": {
+        "motivo": {
+          "type": "string"
+        },
+        "reservaId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "reservaId",
+        "motivo"
+      ],
       "type": "object"
     },
     "Coordenadas": {
@@ -55,7 +93,10 @@
           "type": "number"
         }
       },
-      "required": ["latitud", "longitud"],
+      "required": [
+        "latitud",
+        "longitud"
+      ],
       "type": "object"
     },
     "Deporte": {
@@ -74,7 +115,12 @@
           "type": "string"
         }
       },
-      "required": ["id", "nombre", "icono", "color"],
+      "required": [
+        "id",
+        "nombre",
+        "icono",
+        "color"
+      ],
       "type": "object"
     },
     "Dispositivo": {
@@ -82,14 +128,20 @@
       "description": "Respuesta de POST /dispositivos: el teléfono quedó anotado para recibir push.",
       "properties": {
         "plataforma": {
-          "enum": ["ios", "android"],
+          "enum": [
+            "ios",
+            "android"
+          ],
           "type": "string"
         },
         "tokenExpo": {
           "type": "string"
         }
       },
-      "required": ["tokenExpo", "plataforma"],
+      "required": [
+        "tokenExpo",
+        "plataforma"
+      ],
       "type": "object"
     },
     "Espacio": {
@@ -138,7 +190,10 @@
           "type": "boolean"
         },
         "videoUrl": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
@@ -160,11 +215,21 @@
       "type": "object"
     },
     "EstadoReserva": {
-      "enum": ["confirmada", "cancelada", "cumplida", "ausente"],
+      "enum": [
+        "confirmada",
+        "cancelada",
+        "cumplida",
+        "ausente"
+      ],
       "type": "string"
     },
     "EstadoTurno": {
-      "enum": ["libre", "reservado", "fijo", "mantenimiento"],
+      "enum": [
+        "libre",
+        "reservado",
+        "fijo",
+        "mantenimiento"
+      ],
       "type": "string"
     },
     "Inspeccion": {
@@ -217,7 +282,11 @@
           "type": "number"
         }
       },
-      "required": ["total", "pagina", "porPagina"],
+      "required": [
+        "total",
+        "pagina",
+        "porPagina"
+      ],
       "type": "object"
     },
     "PruebaDePush": {
@@ -228,7 +297,9 @@
           "type": "number"
         }
       },
-      "required": ["dispositivos"],
+      "required": [
+        "dispositivos"
+      ],
       "type": "object"
     },
     "Reserva": {
@@ -256,7 +327,10 @@
           "type": "string"
         },
         "ingresoEn": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "turnoId": {
           "type": "string"
@@ -289,7 +363,15 @@
           "type": "string"
         },
         "dia": {
-          "enum": [0, 1, 2, 3, 4, 5, 6],
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
           "type": "number"
         },
         "espacioId": {
@@ -299,7 +381,10 @@
           "type": "string"
         },
         "hasta": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "id": {
           "type": "string"
@@ -338,15 +423,24 @@
               "type": "string"
             }
           },
-          "required": ["codigo", "mensaje"],
+          "required": [
+            "codigo",
+            "mensaje"
+          ],
           "type": "object"
         }
       },
-      "required": ["error"],
+      "required": [
+        "error"
+      ],
       "type": "object"
     },
     "Rol": {
-      "enum": ["jugador", "encargado", "administrador"],
+      "enum": [
+        "jugador",
+        "encargado",
+        "administrador"
+      ],
       "type": "string"
     },
     "Salud": {
@@ -370,14 +464,24 @@
           "type": "string"
         },
         "motor": {
-          "enum": ["better-sqlite3", "postgres", "mysql", "mariadb"],
+          "enum": [
+            "better-sqlite3",
+            "postgres",
+            "mysql",
+            "mariadb"
+          ],
           "type": "string"
         },
         "version": {
           "type": "string"
         }
       },
-      "required": ["estado", "motor", "almacen", "version"],
+      "required": [
+        "estado",
+        "motor",
+        "almacen",
+        "version"
+      ],
       "type": "object"
     },
     "Sesion": {
@@ -391,7 +495,10 @@
           "$ref": "#/definitions/Usuario"
         }
       },
-      "required": ["token", "usuario"],
+      "required": [
+        "token",
+        "usuario"
+      ],
       "type": "object"
     },
     "Turno": {
@@ -416,13 +523,19 @@
           "type": "string"
         },
         "ingresoEn": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "inicio": {
           "type": "string"
         },
         "motivoBloqueo": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "precio": {
           "type": "number"
@@ -438,7 +551,10 @@
           ]
         },
         "reservaId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "titular": {
           "anyOf": [
@@ -446,16 +562,25 @@
               "additionalProperties": false,
               "properties": {
                 "cantidadPersonas": {
-                  "type": ["number", "null"]
+                  "type": [
+                    "number",
+                    "null"
+                  ]
                 },
                 "nombre": {
                   "type": "string"
                 },
                 "telefono": {
-                  "type": ["string", "null"]
+                  "type": [
+                    "string",
+                    "null"
+                  ]
                 },
                 "usuarioId": {
-                  "type": ["string", "null"]
+                  "type": [
+                    "string",
+                    "null"
+                  ]
                 }
               },
               "required": [

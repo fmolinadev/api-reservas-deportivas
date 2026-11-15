@@ -15,7 +15,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { Response } from 'express';
-import type { RespuestaLista, RespuestaUno } from '../../../contract/api.js';
+import type {
+  CancelacionPorBloqueo,
+  RespuestaLista,
+  RespuestaUno,
+} from '../../../contract/api.js';
 import type { Reserva } from '../../../contract/types.js';
 import {
   Roles,
@@ -26,6 +30,7 @@ import { respuestaUno } from '../../common/response/response.js';
 import {
   CancelarReservaDto,
   CrearReservaDto,
+  FiltrosCancelacionesPorBloqueoDto,
   FiltrosReservasDto,
   MisReservasDto,
 } from './dto/bookings.dto.js';
@@ -98,6 +103,29 @@ export class ReservasControlador {
     @Query() q: MisReservasDto,
   ): Promise<RespuestaLista<Reserva>> {
     return this.servicio.misReservas(sesion.id, q);
+  }
+
+  @Get('yo/reservas/cancelaciones-por-bloqueo')
+  @ApiOperation({
+    summary: 'Motivos de mis reservas canceladas por bloqueos',
+    description:
+      'Con sesión. Conserva el motivo incluso si se elimina el bloqueo. ' +
+      'Opcionalmente filtra por reservaId.',
+  })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: {
+        datos: [{ reservaId: 'res-1180', motivo: 'Cancha anegada' }],
+        meta: { total: 1, pagina: 1, porPagina: 20 },
+      },
+    },
+  })
+  async misCancelacionesPorBloqueo(
+    @SesionActual() sesion: UsuarioSesion,
+    @Query() q: FiltrosCancelacionesPorBloqueoDto,
+  ): Promise<RespuestaLista<CancelacionPorBloqueo>> {
+    return this.servicio.misCancelacionesPorBloqueo(sesion.id, q);
   }
 
   @Get('reservas')

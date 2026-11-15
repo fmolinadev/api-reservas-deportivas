@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 
-// .env se carga antes de importar la app: las entidades leen DB_MOTOR al importarse.
+// .env se carga antes de importar la app: las entidades leen el motor y proveedor al importarse.
 if (existsSync('.env')) process.loadEnvFile('.env');
 
 const { AppModule } = await import('./app.module.js');

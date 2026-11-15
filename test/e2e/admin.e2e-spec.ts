@@ -1,6 +1,6 @@
 // M5 — Administración (ESPECIFICACION §4 y reglas R16 a R20).
 // El reloj de prueba arranca el sábado 19/09/2026 a las 10:00 en Villaguay.
-import type { Bloqueo } from '../../contract/api.js';
+import type { Bloqueo, CancelacionPorBloqueo } from '../../contract/api.js';
 import type {
   Espacio,
   Reserva,
@@ -164,6 +164,101 @@ describe('M5 — Administración', () => {
     });
 
     describe('R18 — cancela las reservas confirmadas que cubre y avisa', () => {
+      it('conserva el motivo de la cancelación para su dueño aunque se quite el bloqueo', async () => {
+        const reserva = await reservaDe(MANANA, '10:00');
+        const otro = await registrarJugador(a);
+        const respuesta = await bloquear(encargado, {
+          espacioIds: [espacioId],
+          fecha: MANANA,
+          motivo: 'Lluvia intensa',
+        }).expect(201);
+        const [bloqueo] = esperarContrato<Bloqueo[]>(respuesta.body, 'Bloqueo');
+
+        await pedir('delete', `/bloqueos/${bloqueo.id}`, encargado).expect(204);
+        const motivos = await pedir(
+          'get',
+          '/yo/reservas/cancelaciones-por-bloqueo',
+          jugador,
+        ).expect(200);
+        expect(
+          esperarContrato<CancelacionPorBloqueo[]>(
+            motivos.body,
+            'CancelacionPorBloqueo',
+          ),
+        ).toEqual([{ reservaId: reserva.id, motivo: 'Lluvia intensa' }]);
+        const ajenos = await pedir(
+          'get',
+          '/yo/reservas/cancelaciones-por-bloqueo',
+          otro,
+        ).expect(200);
+        expect(ajenos.body.datos).toEqual([]);
+        await pedir(
+          'get',
+          '/yo/reservas/cancelaciones-por-bloqueo',
+          null,
+        ).expect(401);
+      });
+
+      it('no atribuye a un bloqueo una reserva previamente cancelada', async () => {
+        await reservaDe(MANANA, '10:00', { estado: 'cancelada' });
+        await bloquear(encargado, {
+          espacioIds: [espacioId],
+          fecha: MANANA,
+          motivo: 'Lluvia',
+        }).expect(201);
+        const motivos = await pedir(
+          'get',
+          '/yo/reservas/cancelaciones-por-bloqueo',
+          jugador,
+        ).expect(200);
+        expect(motivos.body.datos).toEqual([]);
+      });
+
+      it('pagina las cancelaciones propias sin perder motivos', async () => {
+        const primera = await reservaDe(MANANA, '10:00');
+        const segunda = await reservaDe(MANANA, '11:00');
+        await bloquear(encargado, {
+          espacioIds: [espacioId],
+          fecha: MANANA,
+          motivo: 'Mantenimiento',
+        }).expect(201);
+        const ruta = '/yo/reservas/cancelaciones-por-bloqueo';
+        const pagina1 = await a
+          .http()
+          .get(ruta)
+          .set(con(jugador))
+          .query({ pagina: 1, porPagina: 1 })
+          .expect(200);
+        const pagina2 = await a
+          .http()
+          .get(ruta)
+          .set(con(jugador))
+          .query({ pagina: 2, porPagina: 1 })
+          .expect(200);
+        expect(pagina1.body.meta.total).toBe(2);
+        expect([...pagina1.body.datos, ...pagina2.body.datos]).toEqual(
+          [primera.id, segunda.id].sort().map((reservaId) => ({
+            reservaId,
+            motivo: 'Mantenimiento',
+          })),
+        );
+        const filtrada = await a
+          .http()
+          .get(ruta)
+          .set(con(jugador))
+          .query({ reservaId: segunda.id })
+          .expect(200);
+        expect(filtrada.body.datos).toEqual([
+          { reservaId: segunda.id, motivo: 'Mantenimiento' },
+        ]);
+        await a
+          .http()
+          .get(ruta)
+          .set(con(jugador))
+          .query({ reservaId: 'inválido' })
+          .expect(400);
+      });
+
       it('cancela sólo las confirmadas de turnos cubiertos, sin sumar cancelación tardía', async () => {
         const cubierta = await reservaDe(MANANA, '10:00');
         const cubierta2 = await reservaDe(MANANA, '11:00');

@@ -296,6 +296,8 @@ gratis y sin tarjeta es: **Render** (corre la API), **Supabase** (base PostgreSQ
 Lo que tenés que saber:
 
 - Las tablas quedan en el esquema `api` de Supabase (no en `public`).
+- `DB_PROVEEDOR=supabase` selecciona PostgreSQL también para las columnas de fecha;
+  no hace falta definir `DB_MOTOR`.
 - **Arranque en frío**: el plan gratis de Render se duerme a los 15 minutos sin uso y tarda
   alrededor de un minuto en despertar. La primera llamada puede tardar: la app tiene que
   mostrar que está cargando.

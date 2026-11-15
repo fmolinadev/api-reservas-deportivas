@@ -6,10 +6,14 @@ import {
   LessThanOrEqual,
   MoreThan,
   Not,
+  IsNull,
   type FindOptionsWhere,
   type Repository,
 } from 'typeorm';
-import type { RespuestaLista } from '../../../contract/api.js';
+import type {
+  CancelacionPorBloqueo,
+  RespuestaLista,
+} from '../../../contract/api.js';
 import type { Reserva } from '../../../contract/types.js';
 import type { UsuarioSesion } from '../../common/auth/decorators.js';
 import { ErrorApi } from '../../common/errors/error-api.js';
@@ -29,6 +33,7 @@ import { FavoritoEntidad } from '../users/favorite.entity.js';
 import { UsuarioEntidad } from '../users/user.entity.js';
 import type {
   CrearReservaDto,
+  FiltrosCancelacionesPorBloqueoDto,
   FiltrosReservasDto,
   MisReservasDto,
 } from './dto/bookings.dto.js';
@@ -147,6 +152,37 @@ export class ReservasServicio {
       take: q.porPagina,
     });
     return respuestaLista(filas.map(aContrato), meta(total, q));
+  }
+
+  async misCancelacionesPorBloqueo(
+    usuarioId: string,
+    q: FiltrosCancelacionesPorBloqueoDto,
+  ): Promise<RespuestaLista<CancelacionPorBloqueo>> {
+    if (q.reservaId !== undefined && !esIdDe('res', q.reservaId))
+      throw new ErrorApi(
+        'VALIDACION_FALLIDA',
+        'El id de reserva no es válido.',
+      );
+    const donde: FindOptionsWhere<ReservaEntidad> = {
+      usuarioId,
+      estado: 'cancelada',
+      motivoCancelacionPorBloqueo: Not(IsNull()),
+    };
+    if (q.reservaId !== undefined) donde.id = q.reservaId;
+    const [filas, total] = await this.reservas.findAndCount({
+      where: donde,
+      order: { id: 'ASC' },
+      skip: (q.pagina - 1) * q.porPagina,
+      take: q.porPagina,
+    });
+    return respuestaLista(
+      filas.map((fila) => {
+        if (fila.motivoCancelacionPorBloqueo === null)
+          throw new Error('Falta el motivo de la cancelación por bloqueo.');
+        return { reservaId: fila.id, motivo: fila.motivoCancelacionPorBloqueo };
+      }),
+      meta(total, q),
+    );
   }
 
   /** Para el personal: quién tiene cada turno. Por fecha e `inicio` ascendente. */
